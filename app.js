@@ -1,24 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const usersRouter = require('./routes/users');
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('My express app is running!');
-});
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(usersRouter);
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
-    console.log('Connected to MongoDB');
+    app.listen(3000, () => {
+      console.info('Server is running on port 3000');
+    });
   })
-  .catch((error) => {
-    console.error('Error connecting to MongoDB:', error);
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
   });
-
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
-});
