@@ -46,45 +46,37 @@ const createUser = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-const updateUser = (req, res, next) => {
-  const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail((err) => {
-      next(new NotFoundError('Пользователь не найден'));
+const updateUser = (req, res, next, newData) => {
+  const { user } = req;
+  User.findByIdAndUpdate(user._id, newData, { new: true, runValidators: true })
+    .orFail(() => {
+      throw new NotFoundError('Пользователь не найден');
     })
-    .then((user) => res.status(200).send({ data: user }))
+    .then((updatedUser) => res.status(200).send({ data: updatedUser }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Переданны невалидные данные');
+        throw new BadRequest('Переданы невалидные данные');
       }
       throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
 
-const updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail((err) => {
-      next(new NotFoundError('Пользователь не найден'));
-    })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError
-        || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Переданны невалидные данные');
-      }
+const updateUserData = (req, res, next) => {
+  const { name, about } = req.body;
+  updateUser(req, res, next, { name, about });
+};
 
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+const updateUserAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  updateUser(req, res, next, { avatar });
 };
 
 module.exports = {
   getAllUsers,
   getUserById,
   createUser,
-  updateUser,
-  updateAvatar,
+  updateUserData,
+  updateUserAvatar,
 };

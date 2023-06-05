@@ -48,44 +48,28 @@ const deleteCard = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-const addLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail((err) => {
-      next(new NotFoundError('Карточка не найдена'));
+const updateLike = (req, res, next, updateParam) => {
+  Card.findByIdAndUpdate(req.params.cardId, updateParam, { new: true })
+    .orFail(() => {
+      throw new NotFoundError('Карточка не найдена');
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Переданны невалидные данные');
+        throw new BadRequest('Переданы невалидные данные');
       }
       throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
 
+const addLike = (req, res, next) => {
+  updateLike(req, res, next, { $addToSet: { likes: req.user._id } });
+};
+
 const deleteLike = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
-    .orFail((err) => {
-      next(new NotFoundError('Карточка не найдена'));
-    })
-    .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError
-        || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Переданны невалидные данные');
-      }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+  updateLike(req, res, next, { $pull: { likes: req.user._id } });
 };
 
 module.exports = {
