@@ -50,7 +50,7 @@ const updateUser = (req, res, next, newData) => {
   const { user } = req;
   User.findByIdAndUpdate(user._id, newData, { new: true, runValidators: true })
     .orFail(() => {
-      throw new NotFoundError('Пользователь не найден');
+      next(new NotFoundError('Пользователь не найден'));
     })
     .then((updatedUser) => res.status(200).send({ data: updatedUser }))
     .catch((err) => {
