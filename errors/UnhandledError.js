@@ -1,10 +1,8 @@
-const { UNHANDLED_ERROR } = require('../utils/status_codes');
-
 class UnhandledError extends Error {
   constructor(message) {
     super(message);
     this.name = 'UnhandledError';
-    this.statusCode = UNHANDLED_ERROR;
+    this.statusCode = 500;
   }
 }
 module.exports = UnhandledError;

@@ -24,11 +24,11 @@ app.use('*', (req, res, next) => {
   next(new NotFoundError('Page not found'));
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error(err.statusCode);
   console.error(err.message);
   const { statusCode = 500, message = 'Server error' } = err;
-  res.status(statusCode).send({ message: `${statusCode}: ${message}` });
+  res.status(statusCode).send({ statusCode, message });
 });
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')

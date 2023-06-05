@@ -3,11 +3,10 @@ const Card = require('../models/card');
 const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
-const { OK } = require('../utils/status_codes');
 
 const getAllCards = (req, res, next) => {
   Card.find({})
-    .then((allCards) => res.status(OK).send({ data: allCards }))
+    .then((allCards) => res.status(200).send({ data: allCards }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest(err.message);
@@ -23,7 +22,7 @@ const createCard = (req, res, next) => {
   Card.create({
     name, link, owner, createdAt: Date.now(),
   })
-    .then((card) => res.status(OK).send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
@@ -36,10 +35,10 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('Deleted card not found'));
     })
-    .then((card) => res.status(OK).send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         throw new BadRequest(err.message);
@@ -55,12 +54,13 @@ const addLike = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('Liked card not found'));
     })
-    .then((card) => res.status(OK).send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
         throw new BadRequest('Liked card id incorrect');
       }
       throw new UnhandledError(err.message);
@@ -74,12 +74,13 @@ const deleteLike = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('Liked card not found'));
     })
-    .then((card) => res.status(OK).send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
         throw new BadRequest('Liked card id incorrect');
       }
       throw new UnhandledError(err.message);

@@ -3,11 +3,10 @@ const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
-const { OK } = require('../utils/status_codes');
 
 const getAllUsers = (req, res, next) => {
   User.find({})
-    .then((allUsers) => res.status(OK).send({ data: allUsers }))
+    .then((allUsers) => res.status(200).send({ data: allUsers }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest(err.message);
@@ -19,11 +18,11 @@ const getAllUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('User not found'));
     })
     .then((user) => {
-      res.status(OK).send({ data: user });
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -37,7 +36,7 @@ const getUserById = (req, res, next) => {
 const createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(OK).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest(err.message);
@@ -50,10 +49,10 @@ const createUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('User not found'));
     })
-    .then((user) => res.status(OK).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
@@ -67,10 +66,10 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => {
+    .orFail((err) => {
       next(new NotFoundError('User not found'));
     })
-    .then((user) => res.status(OK).send({ data: user }))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
