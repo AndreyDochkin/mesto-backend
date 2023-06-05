@@ -9,7 +9,6 @@ const getAllCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
-  // const likes = [];
   Card.create({ name, link, owner, createdAt: Date.now() })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => res.status(500).send({ message: err }));
@@ -22,7 +21,6 @@ const deleteCard = (req, res) => {
 };
 
 const addLike = (req, res) => {
-  // console.info(req.params.cardId, req.user._id);
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -47,5 +45,5 @@ module.exports = {
   createCard,
   deleteCard,
   addLike,
-  deleteLike
+  deleteLike,
 };

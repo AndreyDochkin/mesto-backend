@@ -19,6 +19,12 @@ app.use((req, res, next) => {
 app.use(usersRouter);
 app.use(cardsRouter);
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  const { statusCode = 500, message = 'Server error' } = err;
+  res.status(statusCode).send({ message });
+});
+
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
     app.listen(3000, () => {
