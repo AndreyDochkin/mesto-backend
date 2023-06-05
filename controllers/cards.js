@@ -49,9 +49,11 @@ const deleteCard = (req, res, next) => {
 };
 
 const updateLike = (req, res, next, updateParam) => {
-  Card.findByIdAndUpdate(req.params.cardId, updateParam, { new: true })
+  const { cardId } = req.params;
+
+  Card.findByIdAndUpdate(cardId, updateParam, { new: true })
     .orFail(() => {
-      throw new NotFoundError('Карточка не найдена');
+      next(new NotFoundError('Карточка не найдена'));
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
@@ -65,11 +67,13 @@ const updateLike = (req, res, next, updateParam) => {
 };
 
 const addLike = (req, res, next) => {
-  updateLike(req, res, next, { $addToSet: { likes: req.user._id } });
+  const updateParam = { $addToSet: { likes: req.user._id } };
+  updateLike(req, res, next, updateParam);
 };
 
 const deleteLike = (req, res, next) => {
-  updateLike(req, res, next, { $pull: { likes: req.user._id } });
+  const updateParam = { $pull: { likes: req.user._id } };
+  updateLike(req, res, next, updateParam);
 };
 
 module.exports = {
