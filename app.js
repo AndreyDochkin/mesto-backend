@@ -20,12 +20,11 @@ app.use((req, res, next) => {
 app.use(usersRouter);
 app.use(cardsRouter);
 
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Page not found'));
-});
+// app.use('*', (req, res, next) => {
+//   next(new NotFoundError('Page not found'));
+// });
 
 app.use((err, req, res, next) => {
-  console.error(err);
   const { statusCode = 500, message = 'Server error' } = err;
   res.status(statusCode).send({ message });
 });

@@ -20,7 +20,6 @@ const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      console.error(err);
       if (err instanceof mongoose.Error.ValidationError) {
         throw new ValidationError(err.message);
       }
