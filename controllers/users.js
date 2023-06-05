@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const ValidationError = require('../errors/ValidationError');
+const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
 
@@ -9,7 +9,7 @@ const getAllUsers = (req, res, next) => {
     .then((allUsers) => res.status(200).send({ data: allUsers }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -18,13 +18,15 @@ const getAllUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(200).send({ data: user }))
+    .orFail((err) => {
+      next(new NotFoundError('User not found'));
+    })
+    .then((user) => {
+      res.status(200).send({ data: user });
+    })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
-      }
       if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
+        throw new BadRequest('User id incorrect');
       }
       throw new UnhandledError(err.message);
     })
@@ -37,7 +39,7 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -47,13 +49,13 @@ const createUser = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
+    .orFail((err) => {
+      next(new NotFoundError('User not found'));
+    })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -63,14 +65,15 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .orFail((err) => {
+      next(new NotFoundError('User not found'));
+    })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
+        throw new BadRequest(err.message);
       }
-      if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
-      }
+
       throw new UnhandledError(err.message);
     })
     .catch((err) => next(err));
