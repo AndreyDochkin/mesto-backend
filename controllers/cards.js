@@ -35,10 +35,13 @@ const createCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail((err) => {
+      next(new NotFoundError('Deleted card not found'));
+    })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -52,7 +55,7 @@ const addLike = (req, res, next) => {
     { new: true },
   )
     .orFail((err) => {
-      next(new NotFoundError('Card not found'));
+      next(new NotFoundError('Liked card not found'));
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
@@ -72,7 +75,7 @@ const deleteLike = (req, res, next) => {
     { new: true },
   )
     .orFail((err) => {
-      next(new NotFoundError('Card not found'));
+      next(new NotFoundError('Liked card not found'));
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
