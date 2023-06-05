@@ -5,6 +5,8 @@ const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
 
+const { PORT = 3000, MONGO_URI = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -27,14 +29,14 @@ app.use('*', (req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err.statusCode);
   console.error(err.message);
-  const { statusCode = 500, message = 'Server error' } = err;
-  res.status(statusCode).send({ statusCode, message });
+  const { statusCode = 500, message = 'На сервере произошла ошибка' } = err;
+  res.status(statusCode).send({ message });
 });
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
+mongoose.connect(MONGO_URI)
   .then(() => {
-    app.listen(3000, () => {
-      console.info('Server is running on port 3000');
+    app.listen(PORT, () => {
+      console.info(`Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {

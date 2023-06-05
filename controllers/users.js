@@ -9,9 +9,9 @@ const getAllUsers = (req, res, next) => {
     .then((allUsers) => res.status(200).send({ data: allUsers }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Идентификатор пользователя невалидный');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -19,16 +19,16 @@ const getAllUsers = (req, res, next) => {
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail((err) => {
-      next(new NotFoundError('User not found'));
+      next(new NotFoundError('Пользователь не найден'));
     })
     .then((user) => {
       res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('User id incorrect');
+        throw new BadRequest('Идентификатор пользователя невалидный');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -39,9 +39,9 @@ const createUser = (req, res, next) => {
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -50,15 +50,15 @@ const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail((err) => {
-      next(new NotFoundError('User not found'));
+      next(new NotFoundError('Пользователь не найден'));
     })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -67,16 +67,16 @@ const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail((err) => {
-      next(new NotFoundError('User not found'));
+      next(new NotFoundError('Пользователь не найден'));
     })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
 
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };

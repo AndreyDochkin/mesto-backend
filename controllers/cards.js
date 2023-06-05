@@ -9,9 +9,9 @@ const getAllCards = (req, res, next) => {
     .then((allCards) => res.status(200).send({ data: allCards }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -26,9 +26,9 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -41,9 +41,9 @@ const deleteCard = (req, res, next) => {
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequest(err.message);
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -55,15 +55,15 @@ const addLike = (req, res, next) => {
     { new: true },
   )
     .orFail((err) => {
-      next(new NotFoundError('Liked card not found'));
+      next(new NotFoundError('Карточка не найдена'));
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Liked card id incorrect');
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
@@ -75,15 +75,15 @@ const deleteLike = (req, res, next) => {
     { new: true },
   )
     .orFail((err) => {
-      next(new NotFoundError('Liked card not found'));
+      next(new NotFoundError('Карточка не найдена'));
     })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Liked card id incorrect');
+        throw new BadRequest('Переданны невалидные данные');
       }
-      throw new UnhandledError(err.message);
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
