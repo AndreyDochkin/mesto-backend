@@ -54,7 +54,8 @@ const updateUser = (req, res, next) => {
     })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
         throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
@@ -70,7 +71,8 @@ const updateAvatar = (req, res, next) => {
     })
     .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
         throw new BadRequest(err.message);
       }
 
