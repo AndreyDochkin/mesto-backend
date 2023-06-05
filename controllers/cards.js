@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const ValidationError = require('../errors/BadRequest ');
+const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
 
@@ -9,7 +9,7 @@ const getAllCards = (req, res, next) => {
     .then((allCards) => res.status(200).send({ data: allCards }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -24,8 +24,9 @@ const createCard = (req, res, next) => {
   })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
+        throw new BadRequest(err.message);
       }
       throw new UnhandledError(err.message);
     })
@@ -50,13 +51,14 @@ const addLike = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail((err) => {
+      next(new NotFoundError('Card not found'));
+    })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
+        throw new BadRequest('Liked card id incorrect');
       }
       throw new UnhandledError(err.message);
     })
@@ -69,13 +71,14 @@ const deleteLike = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail((err) => {
+      next(new NotFoundError('Card not found'));
+    })
     .then((card) => res.status(200).send({ data: card }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new ValidationError(err.message);
-      }
-      if (err instanceof mongoose.Error.CastError) {
-        throw new NotFoundError(err.message);
+      if (err instanceof mongoose.Error.ValidationError
+        || err instanceof mongoose.Error.CastError) {
+        throw new BadRequest('Liked card id incorrect');
       }
       throw new UnhandledError(err.message);
     })
