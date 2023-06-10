@@ -9,6 +9,9 @@ const { PORT = 3000, MONGO_URI = 'mongodb://127.0.0.1:27017/mestodb' } = process
 
 const app = express();
 
+//? Обратите внимание, что в новых версиях Express.js (4.16.0 и выше)
+//? рекомендуется использовать express.json() и express.urlencoded()
+//? вместо body-parser. Эти методы встроены в Express и выполняют аналогичную функциональность.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
