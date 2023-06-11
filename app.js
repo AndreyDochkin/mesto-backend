@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
+const {errors } = require('celebrate');
 
 const { PORT = 3000, MONGO_URI = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
@@ -25,6 +26,8 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message = 'На сервере произошла ошибка' } = err;
   res.status(statusCode).send({ message });
 });
+
+app.use(errors()); //? joi celebrate errors
 
 mongoose.connect(MONGO_URI)
   .then(() => {

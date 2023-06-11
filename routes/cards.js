@@ -3,6 +3,11 @@ const express = require('express');
 const router = express.Router();
 
 const {
+  validateCardBody,
+  validateCardId,
+} = require('../middlewares/validateJoi');
+
+const {
   getAllCards,
   createCard,
   deleteCard,
@@ -11,8 +16,8 @@ const {
 } = require('../controllers/cards');
 
 router.get('/cards', getAllCards);
-router.post('/cards', createCard);
-router.delete('/cards/:cardId', deleteCard);
+router.post('/cards', validateCardBody, createCard);
+router.delete('/cards/:cardId', validateCardId, deleteCard);
 router.put('/cards/:cardId/likes', addLike);
 router.delete('/cards/:cardId/likes', deleteLike);
 
