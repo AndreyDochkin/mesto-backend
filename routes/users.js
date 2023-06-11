@@ -8,11 +8,14 @@ const {
   createUser,
   updateUserData,
   updateUserAvatar,
+  loginUser,
 } = require('../controllers/users');
+
+router.post('/signup', createUser);
+router.post('/signin', loginUser);
 
 router.get('/users', getAllUsers);
 router.get('/users/:userId', getUserById);
-router.post('/users', createUser);
 router.patch('/users/me', updateUserData);
 router.patch('/users/me/avatar', updateUserAvatar);
 

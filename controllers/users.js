@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
+const Conflict = require('../errors/Conflict');
 
+const MONGO_DUMPLICATE_KEY = 11000;
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((allUsers) => res.status(200).send({ data: allUsers }))
@@ -34,16 +37,24 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(200).send({ data: user }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Переданны невалидные данные');
-      }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => {
+      User.create({ name, about, avatar, email, password: hash })
+        .then((user) => res.status(200).send({ name, about, avatar, email }))
+        .catch((err) => {
+          if (err instanceof mongoose.Error.ValidationError) {
+            throw new BadRequest('Переданны невалидные данные');
+          }
+
+          if (err.code === MONGO_DUMPLICATE_KEY) {
+            throw new Conflict('Пользователь с таким email уже существует');
+          }
+
+          throw new UnhandledError('На сервере произошла ошибка');
+        })
+        .catch((err) => next(err));
+    });
 };
 
 const updateUser = (req, res, next, newData) => {
@@ -73,10 +84,15 @@ const updateUserAvatar = (req, res, next) => {
   updateUser(req, res, next, { avatar });
 };
 
+const loginUser = (req, res) => {
+  res.status(200).send({ message: 'ok' });
+};
+
 module.exports = {
   getAllUsers,
   getUserById,
   createUser,
   updateUserData,
   updateUserAvatar,
+  loginUser,
 };
