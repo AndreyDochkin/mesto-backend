@@ -20,6 +20,8 @@ app.use('*', (req, res, next) => {
   next(new NotFoundError('Page not found'));
 });
 
+app.use(errors()); //? joi celebrate errors
+
 app.use((err, req, res, next) => {
   console.error(err.statusCode);
   console.error(err.message);
@@ -27,7 +29,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send({ message });
 });
 
-app.use(errors()); //? joi celebrate errors
+
 
 mongoose.connect(MONGO_URI)
   .then(() => {
