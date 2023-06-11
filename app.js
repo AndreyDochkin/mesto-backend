@@ -1,10 +1,10 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
-const {errors } = require('celebrate');
 
 const { PORT = 3000, MONGO_URI = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
@@ -20,7 +20,7 @@ app.use('*', (req, res, next) => {
   next(new NotFoundError('Page not found'));
 });
 
-app.use(errors()); //? joi celebrate errors
+app.use(errors()); // ? joi celebrate errors
 
 app.use((err, req, res, next) => {
   console.error(err.statusCode);
@@ -28,8 +28,6 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message = 'На сервере произошла ошибка' } = err;
   res.status(statusCode).send({ message });
 });
-
-
 
 mongoose.connect(MONGO_URI)
   .then(() => {

@@ -7,7 +7,7 @@ const {
   validateUserBody,
   validateLoginBody,
   validateAvatarBody,
-  validateUserId
+  validateUserId,
 } = require('../middlewares/validateJoi');
 
 const {
