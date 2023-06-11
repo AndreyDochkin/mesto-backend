@@ -10,7 +10,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const Conflict = require('../errors/Conflict');
 const Unauthorized = require('../errors/Unauthorized');
 
-const { signToken, decodeToken } = require('../utils/jwtAuth');
+const { signToken } = require('../utils/jwtAuth');
 
 const MONGO_DUMPLICATE_KEY = 11000;
 
