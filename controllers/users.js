@@ -10,7 +10,7 @@ const NotFoundError = require('../errors/NotFoundError');
 const Conflict = require('../errors/Conflict');
 const Unauthorized = require('../errors/Unauthorized');
 
-const {signToken} = require('../utils/jwtAuth');
+const { signToken, decodeToken } = require('../utils/jwtAuth');
 
 const MONGO_DUMPLICATE_KEY = 11000;
 
@@ -27,8 +27,8 @@ const getAllUsers = (req, res, next) => {
     .catch((err) => next(err));
 };
 
-const getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
+const getUser = (req, res, next, id) => {
+  User.findById(id)
     .orFail((err) => {
       next(new NotFoundError('Пользователь не найден'));
     })
@@ -42,6 +42,16 @@ const getUserById = (req, res, next) => {
       throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
+};
+
+const getUserById = (req, res, next) => {
+  const { userId } = req.params;
+  getUser(req, res, next, userId);
+};
+
+const getCurrentUser = (req, res, next) => {
+  const { _id } = req.user;
+  getUser(req, res, next, _id);
 };
 
 const createUser = (req, res, next) => {
@@ -125,6 +135,7 @@ module.exports = {
   getAllUsers,
   getUserById,
   createUser,
+  getCurrentUser,
   updateUserData,
   updateUserAvatar,
   loginUser,

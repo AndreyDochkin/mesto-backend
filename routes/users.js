@@ -7,6 +7,7 @@ const {
   getAllUsers,
   getUserById,
   createUser,
+  getCurrentUser,
   updateUserData,
   updateUserAvatar,
   loginUser,
@@ -18,6 +19,7 @@ router.post('/signin', loginUser);
 router.use(auth);
 
 router.get('/users', getAllUsers);
+router.get('/users/me', getCurrentUser);
 router.get('/users/:userId', getUserById);
 router.patch('/users/me', updateUserData);
 router.patch('/users/me/avatar', updateUserAvatar);
