@@ -1,6 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
+const auth = require('../middlewares/auth');
 
 const {
   getAllUsers,
@@ -13,6 +14,8 @@ const {
 
 router.post('/signup', createUser);
 router.post('/signin', loginUser);
+
+router.use(auth);
 
 router.get('/users', getAllUsers);
 router.get('/users/:userId', getUserById);

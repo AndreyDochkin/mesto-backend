@@ -1,13 +1,16 @@
 require('dotenv').config();
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
 const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
 const Conflict = require('../errors/Conflict');
 const Unauthorized = require('../errors/Unauthorized');
+
+const {signToken} = require('../utils/jwtAuth');
 
 const MONGO_DUMPLICATE_KEY = 11000;
 
@@ -97,7 +100,7 @@ const updateUserAvatar = (req, res, next) => {
 
 const loginUser = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email })
+  User.findOne({ email }).select('+password')
     .orFail(() => {
       next(new Unauthorized('Пользователь не найден'));
     })
@@ -106,9 +109,8 @@ const loginUser = (req, res, next) => {
       if (!matched) {
         throw new UnhandledError('Неверный пароль');
       }
-      console.log(JWT_SECRET);
-      res.status(200).send({ user });
-      //TODO make token
+      const token = signToken(user._id);
+      res.status(200).send({ token });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
