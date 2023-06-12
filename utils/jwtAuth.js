@@ -2,8 +2,6 @@ require('dotenv').config();
 
 const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET } = process.env;
-
 const checkToken = (token) => jwt.verify(token, `${process.env.JWT_SECRET}`);
 
 const signToken = (id) => jwt.sign({ _id: id }, `${process.env.JWT_SECRET}`, { expiresIn: '7d' });

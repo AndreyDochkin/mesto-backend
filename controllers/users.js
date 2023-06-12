@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 const BadRequest = require('../errors/BadRequest ');
-const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
 const Conflict = require('../errors/Conflict');
 const Unauthorized = require('../errors/Unauthorized');
@@ -17,30 +16,24 @@ const MONGO_DUMPLICATE_KEY = 11000;
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((allUsers) => res.status(200).send({ data: allUsers }))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Идентификатор пользователя невалидный');
-      }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 const getUser = (req, res, next, id) => {
   User.findById(id)
-    .orFail((err) => {
+    .orFail(() => {
       next(new NotFoundError('Пользователь не найден'));
     })
     .then((user) => {
-      res.status(200).send({ data: user });
+      res.send({ data: user });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Идентификатор пользователя невалидный');
+        next(new BadRequest('Идентификатор пользователя невалидный'));
+      } else {
+        next(err);
       }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+    });
 };
 
 const getUserById = (req, res, next) => {
@@ -57,26 +50,25 @@ const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+
   bcrypt.hash(password, 10)
-    .then((hash) => {
-      User.create({
-        name, about, avatar, email, password: hash,
-      })
-        .then((user) => res.status(200).send({
-          name, about, avatar, email,
-        }))
-        .catch((err) => {
-          if (err instanceof mongoose.Error.ValidationError) {
-            throw new BadRequest('Переданны невалидные данные');
-          }
-
-          if (err.code === MONGO_DUMPLICATE_KEY) {
-            throw new Conflict('Пользователь с таким email уже существует');
-          }
-
-          throw new UnhandledError('На сервере произошла ошибка');
-        })
-        .catch((err) => next(err));
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => res.send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequest('Переданны невалидные данные'));
+      }
+      if (err.code === MONGO_DUMPLICATE_KEY) {
+        next(new Conflict('Пользователь с таким email уже существует'));
+      }
+      next(err);
     });
 };
 
@@ -86,15 +78,14 @@ const updateUser = (req, res, next, newData) => {
     .orFail(() => {
       next(new NotFoundError('Пользователь не найден'));
     })
-    .then((updatedUser) => res.status(200).send({ data: updatedUser }))
+    .then((updatedUser) => res.send({ data: updatedUser }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
-        throw new BadRequest('Переданы невалидные данные');
+        next(new BadRequest('Переданы невалидные данные'));
       }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+      next(err);
+    });
 };
 
 const updateUserData = (req, res, next) => {
@@ -116,18 +107,12 @@ const loginUser = (req, res, next) => {
     .then((user) => Promise.all([user, bcrypt.compare(password, user.password)]))
     .then(([user, matched]) => {
       if (!matched) {
-        next(new Unauthorized('Неверный пароль'));
+        return next(new Unauthorized('Неверный пароль'));
       }
       const token = signToken(user._id);
-      res.status(200).send({ token });
+      return res.send({ token });
     })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        throw new BadRequest('Переданны невалидные данные');
-      }
-      throw new UnhandledError('На сервере произошла ошибка');
-    })
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports = {
