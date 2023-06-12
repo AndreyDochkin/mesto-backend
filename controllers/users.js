@@ -126,7 +126,8 @@ const loginUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest('Переданны невалидные данные');
       }
-      throw new Error();
+      next(err);
+      //throw new Error();
       //throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
