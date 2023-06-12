@@ -12,9 +12,11 @@ const Unauthorized = require('../errors/Unauthorized');
 
 const { signToken } = require('../utils/jwtAuth');
 
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = process.env;
+
 const MONGO_DUMPLICATE_KEY = 11000;
 
-const { JWT_SECRET } = process.env;
 const getAllUsers = (req, res, next) => {
   User.find({})
     .then((allUsers) => res.status(200).send({ data: allUsers }))
@@ -119,7 +121,8 @@ const loginUser = (req, res, next) => {
       if (!matched) {
         next(new Unauthorized('Неверный пароль'));
       }
-      const token = signToken(user._id);
+      // const token = signToken(user._id);
+      const token = jwt.sign({ _id: user.id }, JWT_SECRET, { expiresIn: '7d' });
       res.status(200).send({ token });
     })
     .catch((err) => {
