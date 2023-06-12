@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET } = process.env;
 
-const checkToken = (token) => jwt.verify(token, JWT_SECRET);
+const checkToken = (token) => jwt.verify(token, `${process.env.JWT_SECRET}`);
 
-const signToken = (id) => jwt.sign({ _id: id }, JWT_SECRET, { expiresIn: '7d' });
+const signToken = (id) => jwt.sign({ _id: id }, `${process.env.JWT_SECRET}`, { expiresIn: '7d' });
 
-const decodeToken = (token) => jwt.decode(token, JWT_SECRET);
+const decodeToken = (token) => jwt.decode(token, `${process.env.JWT_SECRET}`);
 
 module.exports = {
   checkToken,

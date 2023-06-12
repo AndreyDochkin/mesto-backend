@@ -12,9 +12,6 @@ const Unauthorized = require('../errors/Unauthorized');
 
 const { signToken } = require('../utils/jwtAuth');
 
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
-
 const MONGO_DUMPLICATE_KEY = 11000;
 
 const getAllUsers = (req, res, next) => {
@@ -121,18 +118,10 @@ const loginUser = (req, res, next) => {
       if (!matched) {
         next(new Unauthorized('Неверный пароль'));
       }
-      // const token = signToken(user._id);
-      const token = jwt.sign({ _id: user.id }, `${process.env.JWT_SECRET}`, { expiresIn: '7d' });
+      const token = signToken(user._id);
       res.status(200).send({ token });
     })
     .catch((err) => {
-
-      res.status(500).send({
-        message: 'ЛОГИН ОШИБКА ',
-        error: err.message,
-        stack: err.stack,
-      });
-
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest('Переданны невалидные данные');
       }
