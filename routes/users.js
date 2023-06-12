@@ -20,10 +20,7 @@ const {
   loginUser,
 } = require('../controllers/users');
 
-router.post('/signup', validateUserBody, createUser);
-router.post('/signin', validateLoginBody, loginUser);
 
-router.use(auth);
 
 router.get('/users', getAllUsers);
 router.get('/users/me', getCurrentUser);
