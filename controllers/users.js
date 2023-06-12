@@ -117,7 +117,7 @@ const loginUser = (req, res, next) => {
     .then((user) => Promise.all([user, bcrypt.compare(password, user.password)]))
     .then(([user, matched]) => {
       if (!matched) {
-        next(new UnhandledError('Неверный пароль'));
+        next(new Unauthorized('Неверный пароль'));
       }
       const token = signToken(user._id);
       res.status(200).send({ token });
