@@ -20,8 +20,6 @@ const {
   loginUser,
 } = require('../controllers/users');
 
-
-
 router.get('/users', getAllUsers);
 router.get('/users/me', getCurrentUser);
 router.get('/users/:userId', validateUserId, getUserById);
