@@ -123,11 +123,17 @@ const loginUser = (req, res, next) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
+
+      res.status(500).send({
+        message: 'ЛОГИН ОШИБКА ',
+        error: err.message,
+        stack: err.stack,
+      });
+
       if (err instanceof mongoose.Error.ValidationError) {
         throw new BadRequest('Переданны невалидные данные');
       }
-      next(err);
-      //throw new UnhandledError('На сервере произошла ошибка');
+      throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
 };
