@@ -127,7 +127,6 @@ const loginUser = (req, res, next) => {
         throw new BadRequest('Переданны невалидные данные');
       }
       next(err);
-      //throw new Error();
       //throw new UnhandledError('На сервере произошла ошибка');
     })
     .catch((err) => next(err));
