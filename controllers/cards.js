@@ -4,6 +4,7 @@ const BadRequest = require('../errors/BadRequest ');
 const UnhandledError = require('../errors/UnhandledError');
 const NotFoundError = require('../errors/NotFoundError');
 const Unauthorized = require('../errors/Unauthorized');
+const Forbidden = require('../errors/Forbidden');
 
 const getAllCards = (req, res, next) => {
   Card.find({})
@@ -41,7 +42,7 @@ const deleteCard = (req, res, next) => {
     })
     .then((card) => {
       if (req.user._id !== card.owner) {
-        next(new Unauthorized('Нельзя удалить чужую карточку'));
+        next(new Forbidden('Нельзя удалить чужую карточку'));
       }
       return Card.deleteOne({ _id: req.params.cardId });
     })
