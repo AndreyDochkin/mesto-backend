@@ -122,8 +122,7 @@ const loginUser = (req, res, next) => {
         next(new Unauthorized('Неверный пароль'));
       }
       // const token = signToken(user._id);
-      const privatKey = 111111;
-      const token = jwt.sign({ _id: user.id }, privatKey, { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user.id }, `${process.env.JWT_SECRET}`, { expiresIn: '7d' });
       res.status(200).send({ token });
     })
     .catch((err) => {
