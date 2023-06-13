@@ -42,8 +42,9 @@ const deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequest('Переданны невалидные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

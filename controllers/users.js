@@ -64,11 +64,11 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequest('Переданны невалидные данные'));
-      }
-      if (err.code === MONGO_DUMPLICATE_KEY) {
+      } else if (err.code === MONGO_DUMPLICATE_KEY) {
         next(new Conflict('Пользователь с таким email уже существует'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -83,8 +83,9 @@ const updateUser = (req, res, next, newData) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
         next(new BadRequest('Переданы невалидные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
