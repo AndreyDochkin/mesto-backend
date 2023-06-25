@@ -8,7 +8,7 @@ const NotFoundError = require('./errors/NotFoundError');
 const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000, MONGO_URI = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+const { PORT, MONGO_URI } = require('./config');
 
 const app = express();
 
