@@ -13,17 +13,6 @@ const { PORT, MONGO_URI } = require('./config');
 
 const app = express();
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    app.listen(PORT, () => {
-      console.info(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
-
 const corsOptions = {
   origin: [
     'https://localhost:3000',
@@ -52,3 +41,13 @@ app.use(errorLogger);
 app.use(errors()); // ? joi celebrate errors
 app.use(errorHandler); // ? middleware for errors
 
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.info(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
