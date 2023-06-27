@@ -30,8 +30,8 @@ app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api', usersRouter);
-app.use('/api', cardsRouter);
+app.use(usersRouter);
+app.use(cardsRouter);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Page not found'));
