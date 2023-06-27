@@ -12,7 +12,30 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { PORT, MONGO_URI } = require('./config');
 
 const app = express();
-app.use(cors());
+
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.info(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+
+const corsOptions = {
+  origin: [
+    'https://localhost:3000',
+    'http://localhost:3000',
+    'http://http://picventures.nomoreparties.sbs',
+    'https://http://picventures.nomoreparties.sbs',
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(requestLogger);
 
 app.use(express.json());
@@ -29,13 +52,3 @@ app.use(errorLogger);
 app.use(errors()); // ? joi celebrate errors
 app.use(errorHandler); // ? middleware for errors
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    app.listen(PORT, () => {
-      console.info(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
