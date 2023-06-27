@@ -17,8 +17,10 @@ const corsOptions = {
   origin: [
     'https://localhost:3000',
     'http://localhost:3000',
-    'http://http://picventures.nomoreparties.sbs',
-    'https://http://picventures.nomoreparties.sbs',
+    'http://picventures.nomoreparties.sbs',
+    'https://picventures.nomoreparties.sbs',
+    'http://api.picventures.nomoreparties.sbs',
+    'https://api.picventures.nomoreparties.sbs',
   ],
   credentials: true,
 };
