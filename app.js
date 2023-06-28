@@ -12,25 +12,23 @@ const { PORT, MONGO_URI } = require('./config');
 
 const app = express();
 
-// const allowedCors = [
-//   'https://localhost:3000',
-//   'http://localhost:3000',
-//   'http://picventures.nomoreparties.sbs',
-//   'https://picventures.nomoreparties.sbs',
-//   'http://api.picventures.nomoreparties.sbs',
-//   'https://api.picventures.nomoreparties.sbs',
-// ];
+const allowedCors = [
+  'https://localhost:3000',
+  'http://localhost:3000',
+  'http://picventures.nomoreparties.sbs',
+  'https://picventures.nomoreparties.sbs',
+  'http://api.picventures.nomoreparties.sbs',
+  'https://api.picventures.nomoreparties.sbs',
+];
 
-// app.use(
-//   cors({
-//     origin: allowedCors,
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     allowedHeaders: ['Content-Type', 'Authorization'],
-//     credentials: true,
-//   }),
-// );
-
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedCors,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  }),
+);
 
 app.use(requestLogger);
 
