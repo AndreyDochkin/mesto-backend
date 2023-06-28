@@ -16,7 +16,7 @@ const createCard = (req, res, next) => {
   Card.create({
     name, link, owner, createdAt: Date.now(),
   })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError
         || err instanceof mongoose.Error.CastError) {
