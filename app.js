@@ -44,13 +44,6 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//! CRASH TEST REMOVE!!
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
-
 app.use(usersRouter);
 app.use(cardsRouter);
 
