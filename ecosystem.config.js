@@ -6,7 +6,7 @@ module.exports = {
       args: 'start',
       instances: 1,
       autorestart: true,
-      watch: true,
+      watch: false,
     },
   ],
 };
