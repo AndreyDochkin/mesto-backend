@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'mesto-back',
+      name: 'mesto-api',
       script: 'npm',
       args: 'start',
       instances: 1,
