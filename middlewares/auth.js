@@ -4,7 +4,7 @@ const Unauthorized = require('../errors/Unauthorized');
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new Unauthorized('Необходима авторизация'));
+    return next(new Unauthorized('Authorisation required'));
   }
 
   try {
@@ -13,7 +13,7 @@ const auth = (req, res, next) => {
     req.user = payload;
     return next();
   } catch (err) {
-    return next(new Unauthorized('Необходима авторизация'));
+    return next(new Unauthorized('Authorisation required'));
   }
 };
 
